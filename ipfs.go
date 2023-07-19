@@ -102,6 +102,8 @@ func (i I) Open(x string) (fs.File, error) {
 	return IF{f, gopath.Base(x)}, nil
 }
 
+var _ fs.FS = I{}
+
 type N struct {
 	fs.File
 	FS   fs.FS
