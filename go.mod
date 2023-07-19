@@ -3,7 +3,7 @@ module github.com/portal-co/remount
 go 1.20
 
 require (
-	bazil.org/fuse v0.0.0-20230120002735-62a210ff1fd5
+	bazil.org/fuse v0.0.0-20200117225306-7b5117fecadc
 	github.com/go-git/go-billy/v5 v5.4.1
 	github.com/hack-pad/hackpadfs v0.2.1
 	github.com/ipfs/boxo v0.10.2
@@ -59,6 +59,6 @@ require (
 )
 
 require (
-	github.com/DeedleFake/p9 v0.6.12
+	github.com/DeedleFake/p9 v0.6.11
 	golang.org/x/sys v0.6.0 // indirect
 )
