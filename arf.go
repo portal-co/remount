@@ -197,4 +197,8 @@ func NewAferoShim(x afero.Fs) FA {
 	return FA{afero.Afero{x}}
 }
 
+func NewCow(over fs.FS, layer fs.FS) fs.FS {
+	return NewAferoShim(afero.NewCopyOnWriteFs(AF{over}, AF{layer}))
+}
+
 var _ fs.FS = FA{}
