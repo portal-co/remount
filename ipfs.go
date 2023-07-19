@@ -5,11 +5,14 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
+	"strings"
 	"time"
 
 	gopath "path"
 
 	"github.com/hack-pad/hackpadfs"
+	"github.com/hack-pad/hackpadfs/mem"
+	"github.com/hack-pad/hackpadfs/mount"
 	iface "github.com/ipfs/boxo/coreiface"
 	"github.com/ipfs/boxo/coreiface/path"
 	"github.com/ipfs/boxo/files"
@@ -157,4 +160,32 @@ func Ipfs(x fs.FS, y string) (files.Node, error) {
 		return nil, err
 	}
 	return files.NewMapDirectory(m), nil
+}
+func Patch(i I, x string, f func(*mount.FS) error) (string, error) {
+	c, err := hackpadfs.Sub(i, x)
+	if err != nil {
+		return "", err
+	}
+	m, err := mem.NewFS()
+	if err != nil {
+		return "", err
+	}
+	c = NewCow(c, m)
+	d, err := mount.NewFS(c)
+	if err != nil {
+		return "", err
+	}
+	err = f(d)
+	if err != nil {
+		return "", err
+	}
+	n, err := Ipfs(c, ".")
+	if err != nil {
+		return "", err
+	}
+	u, err := i.Unixfs().Add(context.Background(), n)
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimPrefix(u.String(), "/ipfs/"), nil
 }
