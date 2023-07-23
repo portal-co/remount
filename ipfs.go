@@ -189,3 +189,23 @@ func Patch(i I, x string, f func(*mount.FS) error) (string, error) {
 	}
 	return strings.TrimPrefix(u.String(), "/ipfs/"), nil
 }
+func Meld(i I, x, y string) (string, error) {
+	c, err := hackpadfs.Sub(i, x)
+	if err != nil {
+		return "", err
+	}
+	d, err := hackpadfs.Sub(i, y)
+	if err != nil {
+		return "", err
+	}
+	c = NewCow(c, d)
+	n, err := Ipfs(c, ".")
+	if err != nil {
+		return "", err
+	}
+	u, err := i.Unixfs().Add(context.Background(), n)
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimPrefix(u.String(), "/ipfs/"), nil
+}
