@@ -10,6 +10,8 @@ import (
 
 	gopath "path"
 
+	"bazil.org/fuse"
+	fusefs "bazil.org/fuse/fs"
 	"github.com/hack-pad/hackpadfs"
 	"github.com/hack-pad/hackpadfs/mem"
 	"github.com/hack-pad/hackpadfs/mount"
@@ -161,6 +163,44 @@ func Ipfs(x fs.FS, y string) (files.Node, error) {
 	}
 	return files.NewMapDirectory(m), nil
 }
+func Push(i I, x fs.FS, y string) (string, error) {
+	n, err := Ipfs(x, y)
+	if err != nil {
+		return "", err
+	}
+	u, err := i.Unixfs().Add(context.Background(), n)
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimPrefix(u.String(), "/ipfs/"), nil
+}
+func Mount(j fs.FS, p string) (func() error, error) {
+	f, err := fuse.Mount(p)
+	if err != nil {
+		return nil, err
+	}
+	var g errgroup.Group
+	g.Go(func() error {
+		return fusefs.Serve(f, FuseFS(Dir{j}))
+	})
+	return func() error {
+		err := f.Close()
+		if err != nil {
+			return err
+		}
+		g.Wait()
+		return nil
+	}, nil
+}
+
+func MountIpfs(x I, i, p string) (func() error, error) {
+	s, err := hackpadfs.Sub(x, i)
+	if err != nil {
+		return nil, err
+	}
+	return Mount(s, p)
+}
+
 func Patch(i I, x string, f func(*mount.FS) error) (string, error) {
 	c, err := hackpadfs.Sub(i, x)
 	if err != nil {
