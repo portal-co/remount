@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
+	"os/exec"
 	"strings"
 	"time"
 
@@ -189,6 +190,10 @@ func Mount(j fs.FS, p string) (func() error, error) {
 			return err
 		}
 		g.Wait()
+		err = exec.Command("/usr/bin/env", "fusermount", "-u", p).Run()
+		if err != nil {
+			return err
+		}
 		return nil
 	}, nil
 }
