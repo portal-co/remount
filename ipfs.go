@@ -140,7 +140,7 @@ func Ipfs(x fs.FS, y string) (files.Node, error) {
 		return nil, err
 	}
 	if !s.IsDir() {
-		return N{o, x, y}, nil
+		return files.NewReaderFile(o), nil
 	}
 	defer o.Close()
 	r, err := hackpadfs.ReadDirFile(o, 0)
