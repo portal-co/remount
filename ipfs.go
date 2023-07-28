@@ -19,6 +19,7 @@ import (
 	iface "github.com/ipfs/boxo/coreiface"
 	"github.com/ipfs/boxo/coreiface/path"
 	"github.com/ipfs/boxo/files"
+	"go4.org/readerutil"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -55,6 +56,7 @@ func (i IN) Sys() any {
 type IF struct {
 	files.Node
 	Name string
+	Rec  func() IF
 }
 
 func (i IF) Stat() (os.FileInfo, error) {
@@ -72,6 +74,10 @@ func (i IF) Read(x []byte) (int, error) {
 		return 0, fmt.Errorf("not supported")
 	}
 	return f.Read(x)
+}
+
+func (i IF) ReadAt(b []byte, off int64) (n int, err error) {
+	return readerutil.NewBufferingReaderAt(i.Rec()).ReadAt(b, off)
 }
 
 func (i IF) ReadDir(n int) ([]fs.DirEntry, error) {
@@ -108,7 +114,11 @@ func (i I) Open(x string) (fs.File, error) {
 	if err != nil {
 		return nil, err
 	}
-	return IF{f, gopath.Base(x)}, nil
+	var r func() IF
+	r = func() IF {
+		return IF{f, gopath.Base(x), r}
+	}
+	return r(), nil
 }
 
 var _ fs.FS = I{}
