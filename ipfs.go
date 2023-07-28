@@ -167,6 +167,7 @@ func Ipfs(x fs.FS, y string) (files.Node, error) {
 	}
 	return files.NewMapDirectory(m), nil
 }
+
 func Push(i I, x fs.FS, y string) (string, error) {
 	n, err := Ipfs(x, y)
 	if err != nil {
