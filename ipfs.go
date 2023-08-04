@@ -188,6 +188,24 @@ func Push(i I, x fs.FS, y string) (string, error) {
 	}
 	return strings.TrimPrefix(u.String(), "/ipfs/"), nil
 }
+func NewDir(i I, m map[string]string) (string, error) {
+	ft, err := mem.NewFS()
+	if err != nil {
+		return "", err
+	}
+	fs, err := mount.NewFS(ft)
+	if err != nil {
+		return "", err
+	}
+	for k, v := range m {
+		s, err := hackpadfs.Sub(i, v)
+		if err != nil {
+			return "", err
+		}
+		fs.AddMount(k, s)
+	}
+	return Push(i, fs, ".")
+}
 func Mount(j fs.FS, p string) (func() error, error) {
 	f, err := fuse.Mount(p)
 	if err != nil {
