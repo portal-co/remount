@@ -3,6 +3,7 @@ package remount
 import (
 	"context"
 	"fmt"
+	"io"
 	"io/fs"
 	"os"
 	"strings"
@@ -175,6 +176,47 @@ func Ipfs(x fs.FS, y string) (files.Node, error) {
 		return nil, err
 	}
 	return files.NewMapDirectory(m), nil
+}
+func Clone(x fs.FS, dx fs.FS, y, dy string) error {
+	o, err := x.Open(y)
+	if err != nil {
+		return err
+	}
+	s, err := o.Stat()
+	if err != nil {
+		o.Close()
+		return err
+	}
+	defer o.Close()
+	if !s.IsDir() {
+		p, err := hackpadfs.Create(dx, dy)
+		if err != nil {
+			return err
+		}
+		defer p.Close()
+		_, err = io.Copy(p, o)
+		return err
+	}
+	r, err := hackpadfs.ReadDirFile(o, 0)
+	if err != nil {
+		return err
+	}
+	err = hackpadfs.Mkdir(dx, dy, 0)
+	if err != nil {
+		return err
+	}
+	// m := map[string]files.Node{}
+	var g errgroup.Group
+	for _, s := range r {
+		s := s
+		g.Go(func() error {
+			z := y + "/" + s.Name()
+			dz := y + "/" + s.Name()
+			return Clone(x, dx, z, dz)
+		})
+	}
+	err = g.Wait()
+	return err
 }
 
 func Push(i I, x fs.FS, y string) (string, error) {
