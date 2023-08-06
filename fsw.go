@@ -73,3 +73,19 @@ func (f FSW) OpenFile(x string, flag int, perm hackpadfs.FileMode) (hackpadfs.Fi
 	var n int64
 	return FSF{File: y, Offset: &n, Path: PathF{Attachment: f.Attachment, Path: x}}, err
 }
+
+type FSP struct {
+	*p9.Remote
+}
+
+func (f FSP) Create(a string, b p9.FileMode, c uint8) (p9.File, error) {
+	return f.Remote.Create(a, b, c)
+}
+func (f FSP) Open(a string, b uint8) (p9.File, error) {
+	return f.Remote.Open(a, b)
+}
+func (f FSP) WriteStat(path string, changes p9.StatChanges) error {
+	return fmt.Errorf("not supported")
+}
+
+var _ p9.Attachment = FSP{}
