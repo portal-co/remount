@@ -194,7 +194,7 @@ func Clone(x fs.FS, dx fs.FS, y, dy string) error {
 			return err
 		}
 		defer p.Close()
-		_, err = io.Copy(p, o)
+		_, err = io.Copy(B{p}, o)
 		return err
 	}
 	r, err := hackpadfs.ReadDirFile(o, 0)
