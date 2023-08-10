@@ -66,12 +66,12 @@ type FSW struct {
 func (f FSW) Open(x string) (hackpadfs.File, error) {
 	y, err := f.Attachment.Open("/"+x, 0)
 	var n int64
-	return FSF{File: y, Offset: &n, Path: PathF{Attachment: f.Attachment, Path: x}}, err
+	return FSF{File: y, Offset: &n, Path: PathF{Attachment: f.Attachment, Path: "/" + x}}, err
 }
 func (f FSW) OpenFile(x string, flag int, perm hackpadfs.FileMode) (hackpadfs.File, error) {
 	y, err := f.Attachment.Open("/"+x, fromOSFlags(flag))
 	var n int64
-	return FSF{File: y, Offset: &n, Path: PathF{Attachment: f.Attachment, Path: x}}, err
+	return FSF{File: y, Offset: &n, Path: PathF{Attachment: f.Attachment, Path: "/" + x}}, err
 }
 
 type FSP struct {
