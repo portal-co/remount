@@ -4,6 +4,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/DeedleFake/p9"
 	"github.com/hack-pad/hackpadfs"
@@ -21,7 +22,7 @@ type Dir struct {
 }
 
 func (d Dir) path(p string) hackpadfs.FS {
-	s, _ := hackpadfs.Sub(d.FS, p)
+	s, _ := hackpadfs.Sub(d.FS, strings.TrimPrefix(p, "/"))
 	return s
 }
 
@@ -160,7 +161,7 @@ func (d Dir) Attach(afile p9.File, user, aname string) (p9.Attachment, error) {
 func (d Dir) Open(p string, mode uint8) (p9.File, error) {
 	flag := toOSFlags(mode)
 
-	file, err := hackpadfs.OpenFile(d.FS, p, flag, 0644)
+	file, err := hackpadfs.OpenFile(d.FS, strings.TrimPrefix(p, "/"), flag, 0644)
 	return &dirFile{
 		File: file,
 	}, err
@@ -187,7 +188,7 @@ func (d Dir) Create(p string, perm p9.FileMode, mode uint8) (p9.File, error) {
 
 // Remove implements Attachment.Remove.
 func (d Dir) Remove(p string) error {
-	return hackpadfs.Remove(d.FS, p)
+	return hackpadfs.Remove(d.FS, strings.TrimPrefix(p, "/"))
 }
 
 type dirFile struct {
