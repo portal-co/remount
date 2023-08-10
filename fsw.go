@@ -64,7 +64,7 @@ type FSW struct {
 }
 
 func (f FSW) Open(x string) (hackpadfs.File, error) {
-	y, err := f.Attachment.Open("/"+x, 0)
+	y, err := f.Attachment.Open("/"+x, p9.OREAD)
 	var n int64
 	return FSF{File: y, Offset: &n, Path: PathF{Attachment: f.Attachment, Path: "/" + x}}, err
 }
