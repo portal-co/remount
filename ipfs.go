@@ -201,7 +201,7 @@ func Clone(x fs.FS, dx fs.FS, y, dy string) error {
 	if err != nil {
 		return err
 	}
-	err = hackpadfs.Mkdir(dx, dy, 0)
+	err = hackpadfs.Mkdir(dx, dy, 0777)
 	if err != nil {
 		return err
 	}
