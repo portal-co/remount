@@ -211,7 +211,7 @@ func Clone(x fs.FS, dx fs.FS, y, dy string) error {
 		s := s
 		g.Go(func() error {
 			z := y + "/" + s.Name()
-			dz := y + "/" + s.Name()
+			dz := dy + "/" + s.Name()
 			return Clone(x, dx, z, dz)
 		})
 	}
