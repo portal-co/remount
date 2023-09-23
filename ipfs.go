@@ -110,7 +110,7 @@ func (i I) Open(x string) (fs.File, error) {
 	if x == "" {
 		return os.Open("/tmp/portal-ipfs-shim")
 	}
-	f, err := i.Unixfs().Get(context.Background(), path.New(x))
+	f, err := i.Unixfs().Get(context.Background(), path.New("/ipfs/"+x))
 	if err != nil {
 		return nil, err
 	}
