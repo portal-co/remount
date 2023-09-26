@@ -219,7 +219,11 @@ func Clone(x fs.FS, dx fs.FS, y, dy string) error {
 	return err
 }
 
-func Push(i I, x fs.FS, y string) (string, error) {
+type Pusher interface {
+	Push(x fs.FS, y string) (string, error)
+}
+
+func (i I) Push(x fs.FS, y string) (string, error) {
 	n, err := Ipfs(x, y)
 	if err != nil {
 		return "", err
@@ -246,7 +250,7 @@ func NewDir(i I, m map[string]string) (string, error) {
 		}
 		fs.AddMount(k, s)
 	}
-	return Push(i, fs, ".")
+	return i.Push(fs, "")
 }
 func Mount(j fs.FS, p string) (func() error, error) {
 	f, err := fuse.Mount(p)
