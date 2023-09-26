@@ -189,7 +189,7 @@ func Clone(x fs.FS, dx fs.FS, y, dy string) error {
 	}
 	defer o.Close()
 	if !s.IsDir() {
-		p, err := hackpadfs.Create(dx, dy)
+		p, err := hackpadfs.OpenFile(dx, dy, os.O_CREATE|os.O_RDWR, 0777)
 		if err != nil {
 			return err
 		}
