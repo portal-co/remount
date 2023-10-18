@@ -36,3 +36,4 @@ func (s Sftp) ReadDir(path string) ([]hackpadfs.DirEntry, error) {
 
 var _ hackpadfs.FS = Sftp{}
 var _ hackpadfs.ReadDirFS = Sftp{}
+var _ hackpadfs.StatFS = Sftp{}

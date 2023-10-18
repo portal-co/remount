@@ -141,19 +141,23 @@ func (n N) Size() (int64, error) {
 var _ files.Node = N{}
 
 func Ipfs(x fs.FS, y string) (files.Node, error) {
-	o, err := x.Open(y)
+	s, err := hackpadfs.Stat(x, y)
 	if err != nil {
-		return nil, err
-	}
-	s, err := o.Stat()
-	if err != nil {
-		o.Close()
 		return nil, err
 	}
 	if !s.IsDir() {
+		o, err := x.Open(y)
+		if err != nil {
+			return nil, err
+		}
+		// s, err := o.Stat()
+		// if err != nil {
+		// 	o.Close()
+		// 	return nil, err
+		// }
 		return files.NewReaderFile(o), nil
 	}
-	defer o.Close()
+	// defer o.Close()
 	r, err := hackpadfs.ReadDir(x, y)
 	if err != nil {
 		return nil, err
@@ -179,17 +183,15 @@ func Ipfs(x fs.FS, y string) (files.Node, error) {
 	return files.NewMapDirectory(m), nil
 }
 func Clone(x fs.FS, dx fs.FS, y, dy string) error {
-	o, err := x.Open(y)
+	s, err := hackpadfs.Stat(x, y)
 	if err != nil {
 		return err
 	}
-	s, err := o.Stat()
-	if err != nil {
-		o.Close()
-		return err
-	}
-	defer o.Close()
 	if !s.IsDir() {
+		o, err := x.Open(y)
+		if err != nil {
+			return err
+		}
 		p, err := hackpadfs.OpenFile(dx, dy, os.O_CREATE|os.O_RDWR, 0777)
 		if err != nil {
 			return err
