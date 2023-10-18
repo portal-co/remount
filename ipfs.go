@@ -170,7 +170,7 @@ func Ipfs(x fs.FS, y string) (files.Node, error) {
 			z := y + "/" + s.Name()
 			n, err := Ipfs(x, z)
 			if err != nil {
-				return err
+				return fmt.Errorf("%s/%w", s.Name(), err)
 			}
 			m[s.Name()] = n
 			return nil
@@ -215,7 +215,11 @@ func Clone(x fs.FS, dx fs.FS, y, dy string) error {
 		g.Go(func() error {
 			z := y + "/" + s.Name()
 			dz := dy + "/" + s.Name()
-			return Clone(x, dx, z, dz)
+			err := Clone(x, dx, z, dz)
+			if err != nil {
+				return fmt.Errorf("%s/%w", s.Name(), err)
+			}
+			return nil
 		})
 	}
 	err = g.Wait()
