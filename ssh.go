@@ -23,7 +23,7 @@ func (s Sftp) OpenFile(filename string, flag int, perm os.FileMode) (fs.File, er
 }
 
 func (s Sftp) ReadDir(path string) ([]hackpadfs.DirEntry, error) {
-	x, err := s.Client.ReadDir(path)
+	x, err := s.Client.ReadDir("/" + path)
 	if err != nil {
 		return nil, err
 	}
@@ -35,6 +35,10 @@ func (s Sftp) ReadDir(path string) ([]hackpadfs.DirEntry, error) {
 		y = append(y, fs.FileInfoToDirEntry(z))
 	}
 	return y, nil
+}
+
+func (s Sftp) Stat(name string) (hackpadfs.FileInfo, error) {
+	return s.Client.Stat("/" + name)
 }
 
 var _ hackpadfs.FS = Sftp{}
