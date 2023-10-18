@@ -143,7 +143,7 @@ var _ files.Node = N{}
 func Ipfs(x fs.FS, y string) (files.Node, error) {
 	s, err := hackpadfs.Stat(x, y)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("stat: %w", err)
 	}
 	if !s.IsDir() {
 		o, err := x.Open(y)
