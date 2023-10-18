@@ -232,6 +232,10 @@ func (i I) Push(x fs.FS, y string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	err = i.Pin().Add(context.Background(), u)
+	if err != nil {
+		return "", err
+	}
 	return strings.TrimPrefix(u.String(), "/ipfs/"), nil
 }
 func NewDir(i I, m map[string]string) (string, error) {
