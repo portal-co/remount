@@ -154,7 +154,7 @@ func Ipfs(x fs.FS, y string) (files.Node, error) {
 		return files.NewReaderFile(o), nil
 	}
 	defer o.Close()
-	r, err := hackpadfs.ReadDirFile(o, 0)
+	r, err := hackpadfs.ReadDir(x, y)
 	if err != nil {
 		return nil, err
 	}
@@ -198,7 +198,7 @@ func Clone(x fs.FS, dx fs.FS, y, dy string) error {
 		_, err = io.Copy(B{p}, o)
 		return err
 	}
-	r, err := hackpadfs.ReadDirFile(o, 0)
+	r, err := hackpadfs.ReadDir(x, y)
 	if err != nil {
 		return err
 	}
