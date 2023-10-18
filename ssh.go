@@ -29,6 +29,9 @@ func (s Sftp) ReadDir(path string) ([]hackpadfs.DirEntry, error) {
 	}
 	y := []os.DirEntry{}
 	for _, z := range x {
+		if z.Name() == "." || z.Name() == ".." {
+			continue
+		}
 		y = append(y, fs.FileInfoToDirEntry(z))
 	}
 	return y, nil
