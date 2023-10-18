@@ -22,4 +22,17 @@ func (s Sftp) OpenFile(filename string, flag int, perm os.FileMode) (fs.File, er
 	return f, err
 }
 
+func (s Sftp) ReadDir(path string) ([]hackpadfs.DirEntry, error) {
+	x, err := s.Client.ReadDir(path)
+	if err != nil {
+		return nil, err
+	}
+	y := []os.DirEntry{}
+	for _, z := range x {
+		y = append(y, fs.FileInfoToDirEntry(z))
+	}
+	return y, nil
+}
+
 var _ hackpadfs.FS = Sftp{}
+var _ hackpadfs.ReadDirFS = Sftp{}
