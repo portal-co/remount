@@ -104,6 +104,7 @@ var _ fs.File = IF{}
 
 type I struct {
 	iface.CoreAPI
+	Ctx context.Context
 }
 
 func (i I) Open(x string) (fs.File, error) {
@@ -228,11 +229,11 @@ func (i I) Push(x fs.FS, y string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	u, err := i.Unixfs().Add(context.Background(), n)
+	u, err := i.Unixfs().Add(i.Ctx, n)
 	if err != nil {
 		return "", err
 	}
-	err = i.Pin().Add(context.Background(), u)
+	err = i.Pin().Add(i.Ctx, u)
 	if err != nil {
 		return "", err
 	}
@@ -305,15 +306,7 @@ func Patch(i I, x string, f func(*mount.FS) error) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	n, err := Ipfs(c, ".")
-	if err != nil {
-		return "", err
-	}
-	u, err := i.Unixfs().Add(context.Background(), n)
-	if err != nil {
-		return "", err
-	}
-	return strings.TrimPrefix(u.String(), "/ipfs/"), nil
+	return i.Push(c, ".")
 }
 func Meld(i I, x, y string) (string, error) {
 	c, err := hackpadfs.Sub(i, x)
@@ -325,13 +318,14 @@ func Meld(i I, x, y string) (string, error) {
 		return "", err
 	}
 	c = NewCow(c, d)
-	n, err := Ipfs(c, ".")
-	if err != nil {
-		return "", err
-	}
-	u, err := i.Unixfs().Add(context.Background(), n)
-	if err != nil {
-		return "", err
-	}
-	return strings.TrimPrefix(u.String(), "/ipfs/"), nil
+	// n, err := Ipfs(c, ".")
+	// if err != nil {
+	// 	return "", err
+	// }
+	// u, err := i.Unixfs().Add(context.Background(), n)
+	// if err != nil {
+	// 	return "", err
+	// }
+	// return strings.TrimPrefix(u.String(), "/ipfs/"), nil
+	return i.Push(c, ".")
 }
