@@ -66,5 +66,6 @@ require (
 
 require (
 	github.com/DeedleFake/p9 v0.6.11
+	github.com/tetratelabs/wazero v1.5.0
 	golang.org/x/sys v0.11.0 // indirect
 )
