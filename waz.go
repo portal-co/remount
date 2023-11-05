@@ -5,7 +5,9 @@ import (
 	"io/fs"
 
 	"github.com/hack-pad/hackpadfs"
+	"github.com/tetratelabs/wazero"
 	experimentalsys "github.com/tetratelabs/wazero/experimental/sys"
+	"github.com/tetratelabs/wazero/experimental/sysfs"
 	"github.com/tetratelabs/wazero/sys"
 )
 
@@ -43,6 +45,9 @@ func WazAdapt(err error) experimentalsys.Errno {
 		return experimentalsys.EBADF
 	}
 	return 0
+}
+func WithHackpadFS(x wazero.FSConfig, d string, fs hackpadfs.FS) wazero.FSConfig {
+	return x.(sysfs.FSConfig).WithSysFSMount(&WazFS{fs}, d)
 }
 
 type WazFS struct {
