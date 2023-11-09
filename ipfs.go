@@ -7,6 +7,7 @@ import (
 	"io/fs"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	gopath "path"
@@ -163,6 +164,7 @@ func Ipfs(x fs.FS, y string) (files.Node, error) {
 		return nil, err
 	}
 	m := map[string]files.Node{}
+	var mtx sync.Mutex
 	var g errgroup.Group
 	for _, s := range r {
 		s := s
@@ -172,6 +174,8 @@ func Ipfs(x fs.FS, y string) (files.Node, error) {
 			if err != nil {
 				return fmt.Errorf("%s/%w", s.Name(), err)
 			}
+			mtx.Lock()
+			defer mtx.Unlock()
 			m[s.Name()] = n
 			return nil
 		})
