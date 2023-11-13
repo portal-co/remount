@@ -18,8 +18,8 @@ import (
 	"github.com/hack-pad/hackpadfs/mem"
 	"github.com/hack-pad/hackpadfs/mount"
 	iface "github.com/ipfs/boxo/coreiface"
-	"github.com/ipfs/boxo/coreiface/path"
 	"github.com/ipfs/boxo/files"
+	"github.com/ipfs/boxo/path"
 	"go4.org/readerutil"
 	"golang.org/x/sync/errgroup"
 )
@@ -112,7 +112,11 @@ func (i I) Open(x string) (fs.File, error) {
 	if x == "" {
 		return os.Open("/tmp/portal-ipfs-shim")
 	}
-	f, err := i.Unixfs().Get(context.Background(), path.New("/ipfs/"+x))
+	p, err := path.NewPath("/ipfs/" + x)
+	if err != nil {
+		return nil, err
+	}
+	f, err := i.Unixfs().Get(context.Background(), p)
 	if err != nil {
 		return nil, err
 	}
