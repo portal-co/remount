@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"os"
 
 	"github.com/DeedleFake/p9"
 	"github.com/hack-pad/hackpadfs"
@@ -69,9 +70,15 @@ func (f FSW) Open(x string) (hackpadfs.File, error) {
 	return FSF{File: y, Offset: &n, Path: PathF{Attachment: f.Attachment, Path: x}}, err
 }
 func (f FSW) OpenFile(x string, flag int, perm hackpadfs.FileMode) (hackpadfs.File, error) {
-	y, err := f.Attachment.Open(x, fromOSFlags(flag))
-	var n int64
-	return FSF{File: y, Offset: &n, Path: PathF{Attachment: f.Attachment, Path: x}}, err
+	if flag%os.O_CREATE == 0 {
+		y, err := f.Attachment.Open(x, fromOSFlags(flag))
+		var n int64
+		return FSF{File: y, Offset: &n, Path: PathF{Attachment: f.Attachment, Path: x}}, err
+	} else {
+		y, err := f.Attachment.Create(x, p9.ModeFromOS(perm), fromOSFlags(flag))
+		var n int64
+		return FSF{File: y, Offset: &n, Path: PathF{Attachment: f.Attachment, Path: x}}, err
+	}
 }
 
 type FSP struct {
