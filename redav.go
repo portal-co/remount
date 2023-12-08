@@ -180,7 +180,7 @@ func (d Dir) Create(p string, perm p9.FileMode, mode uint8) (p9.File, error) {
 	// p = d.path(p)
 
 	if perm&p9.ModeDir != 0 {
-		err := os.Mkdir(p, os.FileMode(perm.Perm()))
+		err := os.Mkdir(p, os.FileMode(perm.Perm().OS()))
 		if err != nil {
 			return nil, err
 		}
@@ -188,7 +188,7 @@ func (d Dir) Create(p string, perm p9.FileMode, mode uint8) (p9.File, error) {
 
 	flag := toOSFlags(mode)
 
-	file, err := hackpadfs.OpenFile(d.FS, Dotify(p), flag|os.O_CREATE, os.FileMode(perm.Perm()))
+	file, err := hackpadfs.OpenFile(d.FS, Dotify(p), flag|os.O_CREATE, os.FileMode(perm.Perm().OS()))
 	return &dirFile{
 		File: file,
 	}, err
