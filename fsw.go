@@ -31,6 +31,12 @@ func (f FSF) Read(p []byte) (int, error) {
 	return z, err
 }
 
+func (f FSF) Write(p []byte) (int, error) {
+	z, err := f.WriteAt(p, *f.Offset)
+	*f.Offset += int64(z)
+	return z, err
+}
+
 func (f FSF) ReadDir(n int) ([]hackpadfs.DirEntry, error) {
 	d, err := f.File.Readdir()
 	if err != nil {
