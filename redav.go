@@ -42,7 +42,7 @@ func infoToEntryD(fi hackpadfs.DirEntry) p9.DirEntry {
 
 // Stat implements Attachment.Stat.
 func (d Dir) Stat(p string) (p9.DirEntry, error) {
-	fi, err := hackpadfs.Stat(d.FS, p)
+	fi, err := hackpadfs.Stat(d.FS, strings.TrimPrefix(p, "/"))
 	if err != nil {
 		return p9.DirEntry{}, err
 	}
@@ -54,7 +54,7 @@ func (d Dir) WriteStat(p string, changes p9.StatChanges) error {
 	// TODO: Add support for other values.
 
 	// p = d.path(p)
-	base := filepath.Dir(p)
+	base := filepath.Dir(strings.TrimPrefix(p, "/"))
 
 	mode, ok := changes.Mode()
 	if ok {
@@ -180,7 +180,7 @@ func (d Dir) Create(p string, perm p9.FileMode, mode uint8) (p9.File, error) {
 
 	flag := toOSFlags(mode)
 
-	file, err := hackpadfs.OpenFile(d.FS, p, flag|os.O_CREATE, os.FileMode(perm.Perm()))
+	file, err := hackpadfs.OpenFile(d.FS, strings.TrimPrefix(p, "/"), flag|os.O_CREATE, os.FileMode(perm.Perm()))
 	return &dirFile{
 		File: file,
 	}, err
