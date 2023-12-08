@@ -42,6 +42,9 @@ func infoToEntryD(fi hackpadfs.DirEntry) p9.DirEntry {
 
 // Stat implements Attachment.Stat.
 func (d Dir) Stat(p string) (p9.DirEntry, error) {
+	if p == "/" {
+		return p9.DirEntry{}, nil
+	}
 	fi, err := hackpadfs.Stat(d.FS, strings.TrimPrefix(p, "/"))
 	if err != nil {
 		return p9.DirEntry{}, err
