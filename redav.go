@@ -10,6 +10,14 @@ import (
 	"github.com/hack-pad/hackpadfs"
 )
 
+func Dotify(p string) string {
+	a := strings.TrimPrefix(p, "/")
+	if a == "" {
+		return "."
+	}
+	return a
+}
+
 // Dir is an implementation of FileSystem that serves from the local
 // filesystem. It accepts attachments of either "" or "/", but rejects
 // all others.
@@ -42,7 +50,7 @@ func infoToEntryD(fi hackpadfs.DirEntry) p9.DirEntry {
 
 // Stat implements Attachment.Stat.
 func (d Dir) Stat(p string) (p9.DirEntry, error) {
-	fi, err := hackpadfs.Stat(d.FS, strings.TrimPrefix(p, "/"))
+	fi, err := hackpadfs.Stat(d.FS, Dotify(p))
 	if err != nil {
 		return p9.DirEntry{}, err
 	}
@@ -54,7 +62,7 @@ func (d Dir) WriteStat(p string, changes p9.StatChanges) error {
 	// TODO: Add support for other values.
 
 	// p = d.path(p)
-	base := filepath.Dir(strings.TrimPrefix(p, "/"))
+	base := filepath.Dir(Dotify(p))
 
 	mode, ok := changes.Mode()
 	if ok {
@@ -161,7 +169,7 @@ func (d Dir) Attach(afile p9.File, user, aname string) (p9.Attachment, error) {
 func (d Dir) Open(p string, mode uint8) (p9.File, error) {
 	flag := toOSFlags(mode)
 
-	file, err := hackpadfs.OpenFile(d.FS, strings.TrimPrefix(p, "/"), flag, 0644)
+	file, err := hackpadfs.OpenFile(d.FS, Dotify(p), flag, 0644)
 	return &dirFile{
 		File: file,
 	}, err
@@ -180,7 +188,7 @@ func (d Dir) Create(p string, perm p9.FileMode, mode uint8) (p9.File, error) {
 
 	flag := toOSFlags(mode)
 
-	file, err := hackpadfs.OpenFile(d.FS, strings.TrimPrefix(p, "/"), flag|os.O_CREATE, os.FileMode(perm.Perm()))
+	file, err := hackpadfs.OpenFile(d.FS, Dotify(p), flag|os.O_CREATE, os.FileMode(perm.Perm()))
 	return &dirFile{
 		File: file,
 	}, err
@@ -188,7 +196,7 @@ func (d Dir) Create(p string, perm p9.FileMode, mode uint8) (p9.File, error) {
 
 // Remove implements Attachment.Remove.
 func (d Dir) Remove(p string) error {
-	return hackpadfs.Remove(d.FS, strings.TrimPrefix(p, "/"))
+	return hackpadfs.Remove(d.FS, Dotify(p))
 }
 
 type dirFile struct {
