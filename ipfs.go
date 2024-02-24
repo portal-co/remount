@@ -17,9 +17,12 @@ import (
 	"github.com/hack-pad/hackpadfs"
 	"github.com/hack-pad/hackpadfs/mem"
 	"github.com/hack-pad/hackpadfs/mount"
-	iface "github.com/ipfs/boxo/coreiface"
+
+	// iface "github.com/ipfs/boxo/coreiface"
+
 	"github.com/ipfs/boxo/files"
 	"github.com/ipfs/boxo/path"
+	iface "github.com/ipfs/kubo/core/coreiface"
 	"go4.org/readerutil"
 	"golang.org/x/sync/errgroup"
 )
